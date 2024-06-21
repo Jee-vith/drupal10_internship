@@ -1,0 +1,317 @@
+<?php
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\views\Views;
+use Drupal\views\Entity\View as ViewEntity;
+use Drupal\Core\Entity\EntityStorageException;
+
+/**
+ * Implements hook_install().
+ */
+function latest_articles_install() {
+  // Define the view configuration with a block display.
+  $view_config = [
+    'id' => 'latest_articles_view', // Machine name of the view
+    'label' => 'Latest Articles View',
+    'description' => 'Latest articles list',
+    'tag' => 'default',
+    'base_table' => 'node_field_data', // Correct base table for your view
+    'core' => 8,
+    'display' => [
+      // Master display (default)
+      'default' => [
+        'display_plugin' => 'default',
+        'id' => 'default',
+        'display_title' => 'Master',
+        'position' => 0,
+        'display_options' => [
+          'title' => 'Latest Articles',
+          'use_more' => FALSE,
+          'access' => [
+            'type' => 'none',
+          ],
+          'cache' => [
+            'type' => 'none',
+          ],
+          'query' => [
+            'type' => 'standard',
+          ],
+          'exposed_form' => [
+            'type' => 'basic',
+          ],
+          'pager' => [
+            'type' => 'full',
+            'options' => [
+              'items_per_page' => 5,
+            ],
+          ],
+          // Sorting configuration in master display
+          'sorts' => [
+            'created' => [
+              'id' => 'created', // Ensure 'id' key is present
+              'order' => 'DESC',
+              'field' => 'created',
+              'table' => 'node_field_data', // Correct table name
+              'plugin_id' => 'sort', // Specify the plugin type
+            ],
+          ],
+          'fields' => [
+            'title' => [
+              'id' => 'title',
+              'table' => 'node_field_data',
+              'field' => 'title',
+              'relationship' => 'none',
+              'group_type' => 'group',
+              'admin_label' => 'Title',
+              'label' => 'Title',
+              'alter' => [
+                'alter_text' => FALSE,
+                'make_link' => TRUE,
+                'absolute' => FALSE,
+                'trim' => FALSE,
+                'word_boundary' => FALSE,
+                'ellipsis' => FALSE,
+                'strip_tags' => FALSE,
+                'html' => FALSE,
+              ],
+              'element_type' => '',
+              'element_class' => '',
+              'element_label_colon' => FALSE,
+              'element_label_position' => 'above',
+              'element_contextual_links' => [],
+              'settings' => [],
+              'plugin_id' => 'field',
+              'default_field' => TRUE,
+              'exclude' => FALSE,
+            ],
+            'created' => [
+              'id' => 'created',
+              'table' => 'node_field_data',
+              'field' => 'created',
+              'relationship' => 'none',
+              'group_type' => 'group',
+              'admin_label' => 'Created',
+              'label' => 'Created',
+              'alter' => [
+                'alter_text' => FALSE,
+                'make_link' => FALSE,
+                'absolute' => FALSE,
+                'trim' => FALSE,
+                'word_boundary' => FALSE,
+                'ellipsis' => FALSE,
+                'strip_tags' => FALSE,
+                'html' => FALSE,
+              ],
+              'element_type' => '',
+              'element_class' => '',
+              'element_label_colon' => FALSE,
+              'element_label_position' => 'above',
+              'element_contextual_links' => [],
+              'settings' => [
+                'date_format' => 'medium',
+              ],
+              'plugin_id' => 'field',
+              'default_field' => TRUE,
+              'exclude' => FALSE,
+            ],
+          ],
+        ],
+      ],
+      // Block display inheriting from master
+      'block_1' => [
+        'display_plugin' => 'block',
+        'id' => 'block_1',
+        'display_title' => 'Block',
+        'position' => 1,
+        'display_options' => [
+          'display_description' => 'A block display of the latest articles view.',
+          'block_description' => 'Latest Articles View Block',
+          'use_more' => FALSE,
+          'access' => [
+            'type' => 'none',
+          ],
+          'cache' => [
+            'type' => 'none',
+          ],
+          'query' => [
+            'type' => 'standard',
+          ],
+          'exposed_form' => [
+            'type' => 'basic',
+          ],
+          'pager' => [
+            'type' => 'full',
+            'options' => [
+              'items_per_page' => 5,
+            ],
+          ],
+          // Override sorting configuration in block display (if needed)
+          'sorts' => [
+            'created' => [
+              'id' => 'created', // Ensure 'id' key is present
+              'order' => 'DESC',
+              'field' => 'created',
+              'table' => 'node_field_data', // Correct table name
+              'plugin_id' => 'sort', // Specify the plugin type
+            ],
+          ],
+          'fields' => [
+            'title' => [
+              'id' => 'title',
+              'table' => 'node_field_data',
+              'field' => 'title',
+              'relationship' => 'none',
+              'group_type' => 'group',
+              'admin_label' => 'Title',
+              'label' => 'Title',
+              'alter' => [
+                'alter_text' => FALSE,
+                'make_link' => TRUE,
+                'absolute' => FALSE,
+                'trim' => FALSE,
+                'word_boundary' => FALSE,
+                'ellipsis' => FALSE,
+                'strip_tags' => FALSE,
+                'html' => FALSE,
+              ],
+              'element_type' => '',
+              'element_class' => '',
+              'element_label_colon' => FALSE,
+              'element_label_position' => 'above',
+              'element_contextual_links' => [],
+              'settings' => [],
+              'plugin_id' => 'field',
+              'default_field' => TRUE,
+              'exclude' => FALSE,
+            ],
+            'created' => [
+              'id' => 'created',
+              'table' => 'node_field_data',
+              'field' => 'created',
+              'relationship' => 'none',
+              'group_type' => 'group',
+              'admin_label' => 'Created',
+              'label' => 'Created',
+              'alter' => [
+                'alter_text' => FALSE,
+                'make_link' => FALSE,
+                'absolute' => FALSE,
+                'trim' => FALSE,
+                'word_boundary' => FALSE,
+                'ellipsis' => FALSE,
+                'strip_tags' => FALSE,
+                'html' => FALSE,
+              ],
+              'element_type' => '',
+              'element_class' => '',
+              'element_label_colon' => FALSE,
+              'element_label_position' => 'above',
+              'element_contextual_links' => [],
+              'settings' => [
+                'date_format' => 'medium',
+              ],
+              'plugin_id' => 'field',
+              'default_field' => TRUE,
+              'exclude' => FALSE,
+            ],
+          ],
+        ],
+      ],
+    ],
+  ];
+
+  try {
+    $view_entity = \Drupal\views\Entity\View::create($view_config);
+    $view_entity->save();
+  } catch (\Drupal\Core\Entity\EntityStorageException $e) {
+    \Drupal::logger('latest_articles')->error('Failed to save view: @error', ['@error' => $e->getMessage()]);
+  }
+}
+
+
+
+/**
+ * Implements hook_views_api().
+ */
+function latest_articles_views_api() {
+  return [
+    'api' => 3,
+    'path' => \Drupal::moduleHandler()->getModule('latest_articles')->getPath() . '/views',
+  ];
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function latest_articles_views_data() {
+  $data = [];
+
+  $data['latest_articles'] = [
+    'table' => [
+      'group' => 'views',
+      'base' => [
+        'field' => 'created',
+        'title' => \Drupal::translation()->translate('Latest Articles'),
+        'help' => \Drupal::translation()->translate('Custom view to display latest articles.'),
+      ],
+    ],
+  ];
+
+  return $data;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function latest_articles_block_info() {
+  $blocks = [];
+
+  $blocks['latest_articles_block'] = [
+    'info' => \Drupal::translation()->translate('Latest Articles Block'),
+    'cache' => \Drupal\Core\Cache\Cache::PERMANENT,
+  ];
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function latest_articles_block_view($delta = '') {
+  $block = [];
+
+  switch ($delta) {
+    case 'latest_articles_block':
+      $view = Views::getView('latest_articles_view');
+      if (is_object($view)) {
+        $view->setDisplay('block_1');
+        $view->preExecute();
+        $view->execute();
+
+        $rendered = $view->buildRenderable('block_1', []);
+        $block['content'] = $rendered;
+      }
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function latest_articles_entity_presave($entity) {
+  // Check if the entity is a node and belongs to the 'article' bundle.
+  if ($entity->getEntityTypeId() === 'node' && $entity->bundle() === 'article') {
+    // Get the created timestamp.
+    $created_time = $entity->getCreatedTime();
+
+    // Format the creation date.
+    $creation_date = \Drupal::service('date.formatter')->format($created_time, 'custom', 'd-m-Y');
+
+    // Append creation date to article title.
+    $title = $entity->getTitle();
+    $entity->setTitle("$title $creation_date");
+  }
+}

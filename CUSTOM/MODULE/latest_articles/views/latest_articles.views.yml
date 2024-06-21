@@ -1,0 +1,19 @@
+id: latest_articles
+label: 'Latest Articles'
+module: latest_articles
+base_table: node
+tag: default
+description: 'Displays the 5 most recent articles.'
+type: default
+core: 8.x
+display:
+  default:
+    display_options:
+      use_ajax: true
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+    display_plugin: default
+    cache_metadata:
+      max-age: -1
