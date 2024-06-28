@@ -1,0 +1,158 @@
+<?php
+use Drupal\node\Entity\NodeType;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_install().
+ */
+function news_module_install() {
+  // Define the news content type.
+  $content_type = NodeType::create([
+    'type' => 'news',
+    'name' => 'News',
+    'description' => 'A custom content type for news.',
+  ]);
+  $content_type->save();
+
+  // Define fields for the news content type.
+
+    // title field.
+    FieldStorageConfig::create([
+      'field_name' => 'field_title',
+      'entity_type' => 'node',
+      'type' => 'string',
+      'settings' => [
+        'max_length' => 255,
+      ],
+      'cardinality' => 1,
+      'translatable' => TRUE,
+    ])->save();
+  
+    FieldConfig::create([
+      'field_name' => 'field_title',
+      'entity_type' => 'node',
+      'bundle' => 'news',
+      'label' => 'title',
+      'required' => FALSE,
+      'settings' => [],
+      'description' => 'A short title for the news item.',
+    ])->save();
+
+  // Sub-title field.
+  FieldStorageConfig::create([
+    'field_name' => 'field_subtitle',
+    'entity_type' => 'node',
+    'type' => 'string',
+    'settings' => [
+      'max_length' => 255,
+    ],
+    'cardinality' => 1,
+    'translatable' => TRUE,
+  ])->save();
+
+  FieldConfig::create([
+    'field_name' => 'field_subtitle',
+    'entity_type' => 'node',
+    'bundle' => 'news',
+    'label' => 'Sub-title',
+    'required' => FALSE,
+    'settings' => [],
+    'description' => 'A short sub-title for the news item.',
+  ])->save();
+
+  // Body field.
+  FieldStorageConfig::create([
+    'field_name' => 'field_body',
+    'entity_type' => 'node',
+    'type' => 'text_long',
+    'settings' => [],
+    'cardinality' => 1,
+    'translatable' => TRUE,
+  ])->save();
+
+  FieldConfig::create([
+    'field_name' => 'field_body',
+    'entity_type' => 'node',
+    'bundle' => 'news',
+    'label' => 'Body',
+    'required' => TRUE,
+    'settings' => [],
+    'description' => 'The main body of the news item.',
+  ])->save();
+
+  // Images field.
+  FieldStorageConfig::create([
+    'field_name' => 'field_images',
+    'entity_type' => 'node',
+    'type' => 'image',
+    'settings' => [
+      'uri_scheme' => 'public',
+      'file_directory' => 'news/images',
+      'file_extensions' => 'png jpg jpeg',
+      'max_filesize' => '2 MB',
+    ],
+    'cardinality' => 10,
+    'translatable' => FALSE,
+  ])->save();
+
+  FieldConfig::create([
+    'field_name' => 'field_images',
+    'entity_type' => 'node',
+    'bundle' => 'news',
+    'label' => 'Images',
+    'required' => FALSE,
+    'settings' => [],
+    'description' => 'Images related to the news item.',
+  ])->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function news_module_uninstall() {
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+
+  // Delete fields associated with the 'news' content type.
+  $fields = ['field_title', 'field_subtitle', 'field_body', 'field_images'];
+
+  foreach ($fields as $field_name) {
+    // Load the field instance.
+    $field_instance = $entity_type_manager->getStorage('field_config')->load('node.news.' . $field_name);
+    if ($field_instance) {
+      try {
+        $field_instance->delete();
+      } catch (\Exception $e) {
+        \Drupal::logger('news_module')->error('Failed to delete field instance @field: @error', [
+          '@field' => $field_name,
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+
+    // Load the field storage.
+    $field_storage = $entity_type_manager->getStorage('field_storage_config')->load('node.' . $field_name);
+    if ($field_storage) {
+      try {
+        $field_storage->delete();
+      } catch (\Exception $e) {
+        \Drupal::logger('news_module')->error('Failed to delete field storage @field: @error', [
+          '@field' => $field_name,
+          '@error' => $e->getMessage(),
+        ]);
+      }
+    }
+  }
+
+  // Delete the 'news' content type.
+  $type = $entity_type_manager->getStorage('node_type')->load('news');
+  if ($type) {
+    try {
+      $type->delete();
+    } catch (\Exception $e) {
+      \Drupal::logger('news_module')->error('Failed to delete content type news: @error', [
+        '@error' => $e->getMessage(),
+      ]);
+    }
+  }
+}

@@ -1,0 +1,28 @@
+.news-article {
+    border: 1px solid #cc0505;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+  }
+  
+  .news-article h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+  }
+  
+  .news-article h2 {
+    font-size: 1.2em;
+    color: #270b82;
+    margin-bottom: 20px;
+  }
+  
+  .news-article .images {
+    margin-bottom: 20px;
+    margin-top: 40px;
+  }
+  
+  .news-article .body {
+    font-size: 1em;
+    line-height: 1.6;
+  }
+  

@@ -1,0 +1,8 @@
+name: 'News Theme'
+type: theme
+description: 'A theme to display news content.'
+core_version_requirement: ^10
+package: Custom
+base theme: classy
+libraries:
+  - news_theme/global-styling

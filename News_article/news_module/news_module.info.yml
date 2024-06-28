@@ -1,0 +1,10 @@
+name: 'News Module'
+type: module
+description: 'A module to create and display news content.'
+core_version_requirement: ^10
+package: Custom
+dependencies:
+  - drupal:file
+  - drupal:image
+  - drupal:views
+version: "1.0"

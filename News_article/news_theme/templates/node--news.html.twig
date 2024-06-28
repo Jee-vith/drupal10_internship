@@ -1,0 +1,13 @@
+<article class="news-article">
+  <h1>{{ node.field_title.value }}</h1>
+  <h2>{{ node.field_subtitle.value }}</h2>
+
+
+  <div class="images">
+    {{ content.field_images }}
+  </div>
+  
+  <div class="body">
+    {{ node.field_body.value|raw }}
+  </div>
+</article>
